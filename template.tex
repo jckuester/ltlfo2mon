@@ -1,0 +1,39 @@
+\\documentclass{article}
+\\usepackage{graphicx}
+
+\\newcommand{\\true}{\\mathsf{true}}
+\\newcommand{\\false}{\\mathsf{false}}
+\\newcommand{\\ltlG}{\\mathsf{G}}
+\\newcommand{\\ltlF}{\\mathsf{F}}
+\\newcommand{\\ltlU}{\\mathsf{U}}
+\\newcommand{\\ltlW}{\\mathsf{W}}
+\\newcommand{\\ltlX}{\\mathsf{X}}
+\\newcommand{\\ltlR}{\\mathsf{R}}
+\\newcommand{\\cA}{\\mathcal{A}}
+
+\\begin{document}
+
+\\subsection*{Pre-constructed SAs}
+
+${foreach sas sa}
+\\begin{figure*}[H]
+\\centering
+\\includegraphics[width=0.2\\textwidth]{${sa.value.pdf}}
+\\caption{$\\cA_{${sa.value.caption}}$}
+\\end{figure*}
+
+\\begin{table}[H]
+  \\caption{States of $\\cA_{${sa.value.caption}}$}
+  \\begin{center}
+    \\begin{tabular}{l|l}
+    State & Formulae \\\\
+    \\hline 
+    ${foreach sa.value.states state}
+    ${state.key} & $${state.value}$ \\\\
+    ${end}
+  \\end{tabular}  
+\\end{center}
+\\end{table}
+${end}
+
+\\end{document}

@@ -1,0 +1,7 @@
+*.[oa]	# no .a and .o files
+*~
+*.aux
+*.log
+*.class
+.cache
+target/
