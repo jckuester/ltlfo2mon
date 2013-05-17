@@ -1,7 +1,7 @@
 Ltlfo2mon
 =========
 
-Ltlfo2mon is an automata-based monitoring framework for a first-order temporal logic, called LTLFO. It can generate and execute monitors for policies specified in LTLFO to verify if a provided trace of events violates or satisfies them. (for more information read the technical report "From propositional to first-order monitoring" on either http://kuester.multics.org/ or http://baueran.multics.org/) 
+Ltlfo2mon is an automata-based monitoring framework for a first-order temporal logic, called LTLFO. It can generate and execute monitors for policies specified in LTLFO to verify if a provided trace of events violates or satisfies them. (for more information read the technical report "From propositional to first-order monitoring" on either http://kuester.multics.org/ or http://baueran.multics.org/).
 
 Usage
 -----
