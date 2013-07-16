@@ -1,7 +1,7 @@
 Ltlfo2mon for RV'13
 ===================
 
-Ltlfo2mon is an automata-based monitoring framework for a first-order temporal logic, called LTLFO. It generates and executes monitors for policies specified in LTLFO to verify if a provided trace of events violates or satisfies them. This work is based on the conference paper [**From propositional to first-order monitoring**](http://kuester.multics.org/publications/RV13.pdf)"" and will be presented at [RV'13](http://rv2013.gforge.inria.fr/).
+Ltlfo2mon is an automata-based monitoring framework for a first-order temporal logic, called LTLFO. It generates and executes monitors for policies specified in LTLFO to verify if a provided trace of events violates or satisfies them. This work is part on the conference paper [From propositional to first-order monitoring](http://kuester.multics.org/publications/RV13.pdf) and will be presented at [RV'13](http://rv2013.gforge.inria.fr/).
 
 Usage
 -----
@@ -10,7 +10,7 @@ It can be used as a command line tool. If you run `java -jar ltlfo2mon.jar` it w
 
 ```
 ltlfo2mon v1.0 beta
-Usage: ltlfo2mon [options] <ltlfo-formula> <trace>
+Usage: ltlfo2mon [options] <ltlfo-formula> <trace-on-stdin>
 
   -o <file> | --output <file>
         Write montior's statistics (size, number of submonitors, etc.) to file.
@@ -22,16 +22,16 @@ Usage: ltlfo2mon [options] <ltlfo-formula> <trace>
         Show monitor's inner-state after each step.
   <ltlfo-formula>
         LTLFO formula.
-  <trace>
-        Trace.
+  <trace-on-stdin>
+        Monitor reads a single trace from stdin.
 ```
 
-It comes with predefined interpreted predicates `eq(x,y), leq(x,y), even(x), odd(x)`, and the uninterpreted predicate `w` to specify actions in the trace. To define your own predicates, functions or constants please read #Configure
+It comes with predefined interpreted predicates `eq(x,y), leq(x,y), even(x), odd(x)`, and the uninterpreted predicates `v, w` to specify actions in the trace. To define your own predicates, functions or constants, please read #configure.
 
 For example run:
 
 ```
-java -jar ltlfo2mon.jar "G A x:w.even(x)" "{w(2)},{w(100),w(20)},{w(30)}"
+echo "{w(2)},{w(100),w(20)},{w(30)}" | java -jar ltlfo2mon.jar "G A x:w.even(x)"
 ```
 
 This will return the result:
@@ -41,8 +41,7 @@ Result: ? after 3 events.
 ```
 
 ```
- java -jar ltlfo2mon.jar "G A x:w. E y:q.leq(x,y)" "{w(2),w(4)},{},{w(3),w(3)}"
-
+echo "{w(2),v(4)},{},{w(3),v(3)}" | java -jar ltlfo2mon.jar "G A x:w. E y:v.leq(x,y)"
 ```
 
 ```
@@ -52,19 +51,19 @@ Result: ⊥ after 3 events.
 Configure
 ---------
 
-To define custom predicates, functions or constants you have to edit `src/main/scala/ltlfo2mon/Conf.scala` and add them to the existing first-order structure `struct`. For example, the following line adds the definition of the uninterpreted predicate `w`:
+Custom predicates, functions or constants can be defined in `src/main/scala/ltlfo2mon/Conf.scala`. For example, the following line adds the definition of the uninterpreted predicate `w` to the first-order structure `struct`:
 
 ```
 struct.addUoperator("w") 
 ```
 
-Furthermore, the interpreted predicate `even` is created as:
+Furthermore, the interpreted predicate `even(x)` is created as:
 
 ```
 struct.addIoperator("even", (args: Vector[Any]) => args(0).toString.toInt % 2 == 0)
 ```
 
-Here, "even" is the name of the predicate, and `(args: Vector[Any]) => args(0).toString.toInt % 2 == 0` is the algorithm to evaluate the truth value of the predicate. It is defined as a function of type `Vector[Any] => Boolean` that takes a vector of arguments as input and returns true or false. Note, that predicates and functions are not type-safe yet: you have to know that `even(x)` is a unary predicate and `x` has to be an integer. Functions can be defined similar to predicates with `addFunct(name: String, interpr: Vector[Any] => Any)`.
+Here, `even` is the name of the predicate, and `(args: Vector[Any]) => args(0).toString.toInt % 2 == 0` is the algorithm to evaluate the truth value of the predicate. It is defined as a function of type `Vector[Any] => Boolean` that takes a vector of arguments as input and returns true or false. Note, that predicates and functions are not type-safe: you have to assure that `even(x)` takes a unary predicate `x` as input that has to be an integer, otherwise the monitor will crash or misbehave at runtime. Functions can be defined similar to predicates with `addFunct(name: String, interpr: Vector[Any] => Any)`.
 
 To define a constant with name `3` and value `3` add
 
@@ -87,7 +86,11 @@ $ sbt
 Experiments
 ----------
 
-In the folder `experiments/` you find the scripts and data, which have been used to generate the experiments for `Fig. 2` in the RV'13 conference paper. The python script `generate-traces.py` generates you test-traces (you can define its length, the maximal size of events, and the parameters of a lognormal derivation for values of predicate `w`). The bash-script `run-experiments.sh` runs the experiment for formulae in `formulae.dat` and traces in `traces.dat`. You can find the results from the conference in `results/`. Finally, `experiments-tikz.r` is an R-script that calculates the statistics and plots the diagram.
+In the folder `experiments/` you find the scripts and data, which have been used to generate the experiments for `Fig. 2` in [From propositional to first-order monitoring](http://kuester.multics.org/publications/RV13.pdf)":
+
+- The python script `generate-traces.py` generates you test-traces (you can define its length, the maximal size of events, and the parameters of a lognormal derivation for values of predicate `w`).
+- The bash-script `run-experiments.sh` runs the experiment for formulae in `formulae.dat` and traces in `traces.dat`. You can find the results of the experiments for the conference in `results/`.
+- `experiments-tikz.r` is an R-script that calculates the statistics and plots the diagram.
 
 Installing
 ----------

@@ -32,6 +32,7 @@ object Conf {
   /**
    * U-operators
    */  
+  struct.addUoperator("v")
   struct.addUoperator("w") 
    
   /**
@@ -45,14 +46,22 @@ object Conf {
     
   /**
    * I-operators
-   */    
+   */  
+  struct.addIoperator("top", (args: Vector[Any]) => true)
+  struct.addIoperator("bot", (args: Vector[Any]) => false)
+  struct.addIoperator("leq", (args: Vector[Any]) => args(0).toString.toInt < args(1).toString.toInt)
+  struct.addIoperator("eq", (args: Vector[Any]) => args(0).toString.toInt == args(1).toString.toInt)
+  struct.addIoperator("even", (args: Vector[Any]) => args(0).toString.toInt % 2 == 0)
+  struct.addIoperator("odd", (args: Vector[Any]) => args(0).toString.toInt % 2 != 0)
+  struct.addIoperator("div4", (args:Vector[Any]) => args(0).toString.toInt % 4 == 0) 
+  
+  // for RV'13 experiments
   struct.addIoperator("m", (args:Vector[Any]) => if((Conf.index+77) % (args(0).toString.toInt+80) == 0) true else false)
   struct.addIoperator("n", (args:Vector[Any]) => if((Conf.index+21) % (args(0).toString.toInt+80) == 0) true else false)
   struct.addIoperator("o", (args:Vector[Any]) => if((Conf.index+7) % (args(0).toString.toInt+80) == 0) true else false)
   struct.addIoperator("p", (args: Vector[Any]) => false, true) // rigid false
-  struct.addIoperator("q", (args: Vector[Any]) => args(0).toString.toInt % 2 == 0) // even
-    // r(x): r becomes true max. 0-x worlds later 
-  struct.addIoperator("r", (args:Vector[Any]) => if(Conf.index % (args(0).toString.toInt+1) == 0) true else false) 
+  struct.addIoperator("q", (args: Vector[Any]) => args(0).toString.toInt % 2 == 0) // even  
+  struct.addIoperator("r", (args:Vector[Any]) => if(Conf.index % (args(0).toString.toInt+1) == 0) true else false) // r(x): r becomes true max. 0-x worlds later  
   struct.addIoperator("s", (args:Vector[Any]) => if(Conf.index % 20 == 0) true else false)
   struct.addIoperator("t", (args:Vector[Any]) => if(Conf.index % (args(0).toString.toInt+args(1).toString.toInt+1) == 0) true else false)
   struct.addIoperator("u", (args:Vector[Any]) => true, true) // rigid true

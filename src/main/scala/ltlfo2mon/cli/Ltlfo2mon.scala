@@ -32,7 +32,7 @@ object Ltlfo2mon {
   val cmdParser = new scopt.immutable.OptionParser[Config]("ltlfo2mon", "v1.0 beta") { 
     def options = Seq(
         arg("<ltlfo-formula>", "LTLFO formula.") { (v: String, c: Config) => c.copy(formula = v) }, // Syntax: p | q | \u03C6 & \u03C8 | \u03C6 || \u03C8 | X \u03C6 | \u03C6 U \u03C8 | G | F | -> | <-> | ")
-        //arg("<trace-file>", "Trace.") { (v: String, c: Config) => c.copy(traceFile = v) }, // Syntax: {<name>(<value>)} {} ..., e.g., {sms(123)} {}
+        argOpt("<trace-on-stdin>", "Monitor reads a single trace from stdin.") { (v: String, c: Config) => c.copy() }, // Syntax: {<name>(<value>)} {} ..., e.g., {sms(123)} {}
         //opt("l", "look-up-table", "<file>", "Provide file with pre-computed SAs.") { (v: String, c: Config) => c.copy(saCacheFile = v) },        
         opt("o", "output", "<file>", "Write montior's statistics (size, number of submonitors, etc.) to file.") { (v: String, c: Config) => c.copy(outputFile = v) },
         flag("p", "progression", "Use progression/formula-rewriting as monitor; default is SA-based monitor.") { (c: Config) => c.copy(progression = true) },
