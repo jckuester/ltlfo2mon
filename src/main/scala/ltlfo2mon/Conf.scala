@@ -49,7 +49,7 @@ object Conf {
    */  
   struct.addIoperator("top", (args: Vector[Any]) => true)
   struct.addIoperator("bot", (args: Vector[Any]) => false)
-  struct.addIoperator("leq", (args: Vector[Any]) => args(0).toString.toInt < args(1).toString.toInt)
+  struct.addIoperator("leq", (args: Vector[Any]) => args(0).toString.toInt <= args(1).toString.toInt)
   struct.addIoperator("eq", (args: Vector[Any]) => args(0).toString.toInt == args(1).toString.toInt)
   struct.addIoperator("even", (args: Vector[Any]) => args(0).toString.toInt % 2 == 0)
   struct.addIoperator("odd", (args: Vector[Any]) => args(0).toString.toInt % 2 != 0)

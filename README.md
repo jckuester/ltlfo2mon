@@ -45,7 +45,7 @@ Result: ? after 3 events.
 Or run:
 
 ```
-echo "{w(2),v(4)},{},{w(3),v(3)}" | java -jar ltlfo2mon.jar "G A x:w. E y:v.leq(x,y)"
+echo "{w(2),v(4)},{},{w(12),v(7)},{}" | java -jar ltlfo2mon.jar "G A x:w. E y:v.leq(x,y)"
 ```
 
 This will return the result:
