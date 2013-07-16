@@ -43,7 +43,7 @@ class SAbasedMonitor(phi: Formula, struct: Structure, v: Valuation = immutable.H
    * M1: Create two instances of Algorithm T.
    */
   private val sa = new SA(phi, struct, v)
-  private val saNeg = new SA(Not(phi).eraseDobuleNeg, struct, v)
+  private val saNeg = new SA(Not(phi), struct, v)
   
   /*
    * M2 & M3: forward event to SA_phi and SA_notphi, and communicate verdict.

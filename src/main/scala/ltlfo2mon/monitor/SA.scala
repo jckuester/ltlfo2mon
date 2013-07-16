@@ -192,7 +192,7 @@ object SA {
    var cache: HashMap[Formula, States] = null   
    
    def setSAcache(policy: Formula) = {
-     cache = HashMap[Formula, States]()   
+     cache = HashMap[Formula, States]()     
      policy.getSubfsForSAcache.foreach{f => SA.cache.put(f, new LBTConverter(f).getStates()) }
    }
    

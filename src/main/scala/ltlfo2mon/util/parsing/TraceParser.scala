@@ -26,7 +26,7 @@ class TraceParser(struct: Structure) extends StandardTokenParsers with PackratPa
   
   lexical.delimiters += ("(", ")","{", "}", ",")
 
-  def predParser: Parser[Elem] = elem("predicate", p => struct.uOps.keySet(p.chars))
+  def predParser: Parser[Elem] = elem("predicate", p => struct.uOps(p.chars))
   val action: Parser[Action] = predParser ~ "(" ~ rep1sep(numericLit, ",") <~ ")" ^^ {case name ~ _ ~ args => (name.chars, args.toVector)}
   val event: Parser[Event] = "{" ~> repsep(action, ",") <~ "}" ^^ {case actions => actions.toSet}
   val trace: Parser[Trace] = repsep(event, ",") ^^ {case events => Trace(events)}

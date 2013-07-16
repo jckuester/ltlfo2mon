@@ -31,9 +31,8 @@ object Conf {
 
   /**
    * U-operators
-   */
-  struct.addUoperator("p", () => Vector(Random.nextInt(100)))
-  struct.addUoperator("q", () => Vector(Random.nextInt(100)))
+   */  
+  struct.addUoperator("w") 
    
   /**
    * Constants
@@ -46,19 +45,23 @@ object Conf {
     
   /**
    * I-operators
-   */
-  struct.addIoperator("top", (args: Vector[Any]) => true, true)
-  struct.addIoperator("bot", (args: Vector[Any]) => false, true)
-  struct.addIoperator("leq", (args: Vector[Any]) => args(0).toString.toInt < args(1).toString.toInt, true)
-  struct.addIoperator("eq", (args: Vector[Any]) => args(0).toString.toInt == args(1).toString.toInt, true)
-  struct.addIoperator("even", (args: Vector[Any]) => args(0).toString.toInt % 2 == 0, true)
-  struct.addIoperator("odd", (args: Vector[Any]) => args(0).toString.toInt % 2 != 0, true)
-  struct.addIoperator("div4", (args:Vector[Any]) => args(0).toString.toInt % 4 == 0, true) 
-   
+   */    
+  struct.addIoperator("m", (args:Vector[Any]) => if((Conf.index+77) % (args(0).toString.toInt+80) == 0) true else false)
+  struct.addIoperator("n", (args:Vector[Any]) => if((Conf.index+21) % (args(0).toString.toInt+80) == 0) true else false)
+  struct.addIoperator("o", (args:Vector[Any]) => if((Conf.index+7) % (args(0).toString.toInt+80) == 0) true else false)
+  struct.addIoperator("p", (args: Vector[Any]) => false, true) // rigid false
+  struct.addIoperator("q", (args: Vector[Any]) => args(0).toString.toInt % 2 == 0) // even
+    // r(x): r becomes true max. 0-x worlds later 
+  struct.addIoperator("r", (args:Vector[Any]) => if(Conf.index % (args(0).toString.toInt+1) == 0) true else false) 
+  struct.addIoperator("s", (args:Vector[Any]) => if(Conf.index % 20 == 0) true else false)
+  struct.addIoperator("t", (args:Vector[Any]) => if(Conf.index % (args(0).toString.toInt+args(1).toString.toInt+1) == 0) true else false)
+  struct.addIoperator("u", (args:Vector[Any]) => true, true) // rigid true
+
   /*
    * print options
    */
   var verbose = false
   var verbose2 = false    
-  val countDeterministic = false
+  // count level 0 SAs as deterministic (work around -> implementation follows)
+  val countDeterministic = true
 }

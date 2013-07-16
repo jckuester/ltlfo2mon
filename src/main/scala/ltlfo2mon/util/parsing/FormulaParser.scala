@@ -69,7 +69,7 @@ class FormulaParser(struct: Structure) extends StandardTokenParsers with Operato
   def varNameParser: Parser[Elem] = elem("variable", v => variables(v.chars))
   def constNameParser: Parser[Elem] = elem("constant", c => struct.consts.keySet(c.chars))
   def functNameParser: Parser[Elem] = elem("function", f => struct.functs.keySet(f.chars))
-  def uOpNameParser: Parser[Elem] = elem("uOp", p => struct.uOps.keySet(p.chars))
+  def uOpNameParser: Parser[Elem] = elem("uOp", p => struct.uOps(p.chars))
   def iOpNameParser: Parser[Elem] = elem("iOp", r => struct.iOps.keySet(r.chars))
    
   /**
@@ -79,7 +79,7 @@ class FormulaParser(struct: Structure) extends StandardTokenParsers with Operato
     variables = mutable.Set[String]()
     val tokens = new lexical.Scanner(input)
     phrase(formula)(tokens) match {
-      case Success(result, _) => Some(result.eraseDobuleNeg)     
+      case Success(result, _) => Some(result)     
       case f: NoSuccess => println("Incorrect formula syntax: " + f.msg); None     
     }
   }

@@ -31,14 +31,17 @@ class LBTConverter(phi: Formula) extends JavaTokenParsers {
               
   def getStates(): States = {
     val lbtFormulaString = phi.toLBTstr(phi.encodedAtomsQ)
-    val command = ("echo " + lbtFormulaString) #| "lbt" #| "lbt2dot"
+    val command = ("echo " + lbtFormulaString) #| "lbt" #| "lbt2dot"    
     parse(command!!)  
     
     /*
      * transition to state labeled
      * mark target states of state 0 as initial and delete initial state 0
      */
-    statesMap.get("q0").get.targetStates.foreach{state => state.isInitial = true}
+    statesMap.get("q0") match {
+      case None => throw new Exception("LBTConverter.scala: State q0 does not exist.")
+      case Some(q) => q.targetStates.foreach{state => state.isInitial = true}
+    }
     statesMap.remove("q0")    
     
     return statesMap.values.toSet 
@@ -50,7 +53,7 @@ class LBTConverter(phi: Formula) extends JavaTokenParsers {
   def graph: Parser[Any] = "digraph" ~ ident ~ "{" ~ rep1(stmt) ~ "}"  
   def stmt: Parser[Any] = (edge | state) ~ ";"
   def edge: Parser[Any] = id ~ "->" ~ id ~ label ^^ {case srcStateName ~ _ ~ targetStateName ~ formulae => {
-    // if source state does not exist, create state
+    // if target state does not exist, create state
     statesMap.get("q" + targetStateName) match {
       case None => statesMap.put("q" + targetStateName, new State("q" + targetStateName, formulae, false))
       // add formulae from incoming transition to target state
@@ -58,16 +61,25 @@ class LBTConverter(phi: Formula) extends JavaTokenParsers {
         targetState.formulae ++= formulae        
       }
     }
-    // if target state does not exist, create state
+    // if source state does not exist, create state
     statesMap.get("q" + srcStateName) match {
-      case None => statesMap.put("q" + srcStateName, new State("q" + srcStateName, Set[Formula](), false))
-      case Some(srcState) => 
+      case None => {
+        val srcState = new State("q" + srcStateName, Set[Formula](), false)
+        statesMap.put("q" + srcStateName, srcState)
+        statesMap.get("q" + targetStateName) match {
+          case None => throw new Exception("LBTConverter.scala: Target state 'q" + targetStateName + "' does not exist.")
+          // add outgoing transition to state
+          case Some(targetState) => srcState.targetStates += targetState 
+        }        
+      }      
+      case Some(srcState) => {        
+        statesMap.get("q" + targetStateName) match {
+          case None => throw new Exception("LBTConverter.scala: Target state 'q" + targetStateName + "' does not exist.")
+          // add outgoing transition to state
+          case Some(targetState) => srcState.targetStates += targetState 
+        }        
+      }
     }    
-    // add incoming/outgoing transitions to states
-    val srcState = statesMap.get("q" + srcStateName).get
-    val targetState = statesMap.get("q" + targetStateName).get
-    //targetState.addIncomingTransition(srcState)
-    srcState.targetStates += targetState
   }
   }
   def state: Parser[Any] = id ~ "[" ~ """[a-z0-9=,\"\\]*""".r ~ "]"  

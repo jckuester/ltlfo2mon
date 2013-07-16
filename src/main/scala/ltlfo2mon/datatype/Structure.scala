@@ -17,23 +17,29 @@
  *  along with ltlfo2mon.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 package ltlfo2mon.datatype
-import scala.collection.mutable.HashMap
+import scala.collection.mutable._
 import scala.Nothing
 
 /**
  * First-order structure
+ * @require uOps, iOps, functs and consts must be disjoint
  */
 class Structure {
-  var uOps: HashMap[String, () => Vector[Any]] = HashMap[String, () => Vector[Any]]()
+  var uOps: HashSet[String] = HashSet[String]()
   var iOps: HashMap[String, (Vector[Any] => Boolean, Boolean)] = HashMap[String, (Vector[Any] => Boolean, Boolean)]()
   var functs: HashMap[String, Vector[Any] => Any] = HashMap[String, Vector[Any] => Any]()
   var consts: HashMap[String, Any] = HashMap[String, Any]()
   
-  def addUoperator(name: String, randomFunct: () => Vector[Any]) = uOps.put(name, randomFunct)
-  def addIoperator(name: String, interpr: Vector[Any] => Boolean, isRigid: Boolean) = iOps.put(name, (interpr, isRigid))
-  def addFunct(name: String, interpr: Vector[Any] => Any) = functs.put(name, interpr)
-  def addConst(name: String, interpr: Any) = consts.put(name, interpr)
+  def addUoperator(name: String) = if(isFreeName(name)) uOps.add(name)
+  def addIoperator(name: String, interpr: Vector[Any] => Boolean, isRigid: Boolean = false) = if(isFreeName(name)) iOps.put(name, (interpr, isRigid))
+  def addFunct(name: String, interpr: Vector[Any] => Any) = if(isFreeName(name)) functs.put(name, interpr)
+  def addConst(name: String, interpr: Any) = if(isFreeName(name)) consts.put(name, interpr)
 
-  def isFreeName(name: String) = !uOps.keySet(name) && !iOps.keySet(name) && !functs.keySet(name) && !consts.keySet(name)
-  // TODO isConsistent  
+  def isFreeName(name: String): Boolean = {
+    if(!uOps(name) && !iOps.keySet(name) && !functs.keySet(name) && !consts.keySet(name)) {
+      return true
+    } else {
+      throw new Exception("uOps, iOps, functs and consts must be disjoint.")
+    }
+  }
 }

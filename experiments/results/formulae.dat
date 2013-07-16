@@ -1,0 +1,9 @@
+#formula-no	look-up-table-size	formula-latex
+$\varphi_{1}$	8	$\ltlG \forall x:w.\ \lnot p(x)$
+$\varphi_{2}$	19	$\ltlG(\exists x:w.\ q(x) \Rightarrow \ltlG \forall y:w.\ \lnot p(y))$
+$\varphi_{3}$	24	$\ltlG \forall x:w.\ ((s(x) \land (\lnot r(x) \land (\ltlF r(x)))) \Rightarrow (\lnot p(x) \ltlU r(x)))$
+$\varphi_{4}$	21	$\ltlG \forall x:w.\ (s(x) \Rightarrow (\ltlF(q(x) \land (\ltlF r(x)))))$
+$\varphi_{5}$	24	$\ltlG \forall x:w.\ ((s(x) \land (\lnot r(x) \land (\ltlF r(x)))) \Rightarrow (u(x) \ltlU r(x)))$
+$\varphi_{6}$	53	$\ltlG \forall x:w.\ ((n(x) \land (\lnot r(x) \land (\ltlF r(x)))) \Rightarrow ((m(x) \Rightarrow (\lnot r(x) \ltlU (o(x) \land \lnot r(x)))) \ltlU r(x)))$
+$\varphi_{7}$	280	$\ltlG \forall x:w.\ q(x) \Rightarrow (\lnot u(x) \land \lnot r(x)) \ltlU (r(x) \lor ((u(x) \land \lnot r(x)) \ltlU (r(x) \lor ((\lnot u(x) \land \lnot r(x)) \ltlU (r(x) \lor ((u(x) \land \lnot r(x)) \ltlU (r(x) \lor (\lnot u(x) \ltlW r(x) \lor \ltlG u(x)))))))))$
+$\varphi_{8}$	24	$\ltlG \forall x:w.\ ((q(x) \land \lnot p(x)) \Rightarrow (\lnot p(x) \ltlU \exists y:w.\ (t(x, y) \land \lnot p(x))))$

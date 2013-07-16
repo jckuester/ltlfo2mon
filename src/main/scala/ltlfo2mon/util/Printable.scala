@@ -71,6 +71,8 @@ object Printable {
       case next: Next => "X " + next.phi.toLBTstr(encodedAtomsHat)
       case until: Until => "U " + until.phi.toLBTstr(encodedAtomsHat) + " " + until.psi.toLBTstr(encodedAtomsHat)
       case forall: Forall => "p" + encodedAtomsHat.get(forall).get.toString  
+      case globally: Globally => "G " + globally.phi.toLBTstr(encodedAtomsHat)
+      case eventually: Eventually => "F " + eventually.phi.toLBTstr(encodedAtomsHat)
       case _ => ""
     }
   }  	

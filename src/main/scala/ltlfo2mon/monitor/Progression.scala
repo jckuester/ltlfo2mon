@@ -41,15 +41,12 @@ class Progression(phi: Formula, struct: Structure) extends IMonitor(phi) {
    * progression function
    */
   private def prg(phi: Formula, event: Event, v: Valuation): Formula = {
-    phi match {      
-      case globally: Globally => And(prg(globally.chi, event, v), globally).eval
-      //case eventually: Eventually => Or(prg(eventually.chi, event, v), eventually).eval
-     
+    phi match {     
       case True() => True()
       case False() => False()
       case uop: Uop => if(uop.interpret(struct, event, v)) True() else False()
       case iop: Iop => if(iop.interpret(struct, v)) True() else False()
-      case not: Not => Not(prg(not.phi, event, v)).eval
+      case not: Not => Not(prg(not.phi, event, v))
       case and: And => And(prg(and.phi, event, v), prg(and.psi, event, v)).eval
       case or: Or => Or(prg(or.phi,event, v), prg(or.psi, event, v)).eval
       case next: Next => next.phi
@@ -67,7 +64,9 @@ class Progression(phi: Formula, struct: Structure) extends IMonitor(phi) {
       }
       case forallConj: ForallConj => {
         ForallConj(forallConj.elems.map{case (f,v) => (prg(f, event, v), v)}).eval        
-      }        
+      }
+      case globally: Globally => And(prg(globally.phi, event, v), globally).eval
+      case eventually: Eventually => Or(prg(eventually.phi, event, v), eventually).eval     
     }
   }
  

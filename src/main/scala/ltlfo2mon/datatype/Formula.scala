@@ -18,8 +18,7 @@
  ******************************************************************************/
 package ltlfo2mon.datatype
 
-import ltlfo2mon.datatype._
-import ltlfo2mon.datatype.Types._
+import Types._
 import scala.collection._
 
 @serializable
@@ -35,18 +34,17 @@ sealed abstract class Formula {
   val isAtomQ: Boolean
   val isLiteralQ: Boolean
   val subFormulae: Formulae
-  lazy val closure: Formulae = subFormulae union subFormulae.map{ f => Not(f).eraseDobuleNeg}    
+  lazy val closure: Formulae = subFormulae union subFormulae.map{ f => Not(f)}    
   val subFormulaeQ: Formulae  
-  lazy val closureQ: Formulae = subFormulaeQ union subFormulaeQ.map{ f => Not(f).eraseDobuleNeg}
+  lazy val closureQ: Formulae = subFormulaeQ union subFormulaeQ.map{ f => Not(f)}
   val numOfPreds: Int
   lazy val encodedAtomsQ: mutable.HashMap[Formula, Int] = mutable.HashMap[Formula, Int]() ++ closureQ.filter(_.isAtomQ).zipWithIndex
   lazy val encodedAtomsQReverse: mutable.HashMap[Int, Formula] = encodedAtomsQ.map(_.swap)
-  def eraseDobuleNeg: Formula
   /*
    * get quantified sub-formulae without quantifier 
    */
   private def getPhiOfQuantifiedSFs: Formulae = closure.filter(_.isInstanceOf[Forall]).asInstanceOf[Set[Forall]].map(forall => forall.phi)
-  def getSubfsForSAcache: Formulae = getPhiOfQuantifiedSFs union getPhiOfQuantifiedSFs.map(f => Not(f).eraseDobuleNeg) union Set(this, Not(this).eraseDobuleNeg)
+  def getSubfsForSAcache: Formulae = getPhiOfQuantifiedSFs union getPhiOfQuantifiedSFs.map(f => Not(f)) union Set(this, Not(this))
   def literalsQ: Formulae
   lazy val atomsQ: Formulae = literalsQ.filter(_.isAtomQ)
   lazy val showParentheses = !(this.isInstanceOf[UnOp] || this.isInstanceOf[Pred] || this.isInstanceOf[True] || this.isInstanceOf[False])
@@ -73,8 +71,7 @@ sealed abstract class Pred(name: String, args: Vector[Term]) extends Formula {
   val subFormulaeQ = Set[Formula](this)
   val numOfPreds = 1
   val numOfQuantified = 0 
-  
-  def eraseDobuleNeg = this 
+ 
   def literalsQ = Set[Formula](this)
 }
 
@@ -114,21 +111,16 @@ sealed abstract class UnOp(phi: Formula) extends Formula {
 class Not(val phi: Formula) extends UnOp(phi) {
   val operatorSymbol = "\u00AC" 
   val texSymbol = """\lnot """
-  def eval = { phi match { case _: True => False(); case _: False => True(); case _ => Not(phi) } }  
   val level = phi.level  
   lazy val subFormulae = phi.subFormulae + this
-  lazy val subFormulaeQ = phi.subFormulaeQ + this
-  
-  def eraseDobuleNeg = phi match {
-                   case f: Not if !f.isInstanceOf[Globally] => f.phi.eraseDobuleNeg
-  								 case _ => Not(phi.eraseDobuleNeg) }  
+  lazy val subFormulaeQ = phi.subFormulaeQ + this  
 }
 object Not {
   def apply(phi: Formula) = phi match {
-    case until: Until if until.phi.isInstanceOf[True] => until.psi match {
-      case not: Not => new Globally(not.phi)
-      case _ => new Not(phi)
-    }
+    case _: True => False()
+    case _: False => True()
+    // eliminate nested negations
+    case not: Not => not.phi
     case _ => new Not(phi)
   }
   def unapply(not: Not): Option[Formula] = Some(not.phi)
@@ -140,7 +132,6 @@ case class Next(val phi: Formula) extends UnOp(phi) {
   val level = phi.level 
   lazy val subFormulae = phi.subFormulae + this
   lazy val subFormulaeQ = phi.subFormulaeQ + this  
-  def eraseDobuleNeg = Next(phi.eraseDobuleNeg)
 }
 
 case class Forall(p: Uop, phi: Formula) extends UnOp(phi) {
@@ -150,7 +141,6 @@ case class Forall(p: Uop, phi: Formula) extends UnOp(phi) {
   val level = phi.level + 1 
   lazy val subFormulae = phi.subFormulae + this
   lazy val subFormulaeQ = Set[Formula](this)
-  def eraseDobuleNeg = Forall(p, phi.eraseDobuleNeg)
 }
 
 /*
@@ -179,32 +169,37 @@ sealed abstract class BiOp(phi: Formula, psi: Formula) extends Formula {
 case class And(phi: Formula, psi: Formula) extends BiOp(phi, psi) {
   val operatorSymbol = "\u2227"
   val texSymbol = """\land"""
-  def eraseDobuleNeg = And(phi.eraseDobuleNeg, psi.eraseDobuleNeg)
 
-  def eval = { phi match{ case _: True => psi match { case _: True => True()
-						     case _: False => False()
-						     case _ => psi }
+  def eval = { phi match{ 
+      case _: True => psi match { 
+        case _: True => True()
+        case _: False => False()
+        case _ => psi }
 			 case _: False => False()
-			 case _ => psi match{ case _: True => phi
-					     case _: False => False()
-					     case _ => this }
-		       }
-	    }
+			 case _ => psi match{ 
+			   case _: True => phi
+			   case _: False => False()
+			   case _ => this }
+      }
+  }  
 }
 
 class Or(val phi: Formula, val psi: Formula) extends BiOp(phi, psi) {
   val operatorSymbol = "\u2228"   
   val texSymbol = """\lor"""
-  def eraseDobuleNeg = Or(phi.eraseDobuleNeg, psi.eraseDobuleNeg)
-  def eval = { phi match{ case True() => True()
-    case False() => psi match { case _: True => True()
-    case _: False => False()
-    case _ => psi }
-    case _ => psi match{ case _: True => True()
-    case _: False => phi
-    case _ => this }
+  
+  def eval = { phi match{ 
+    case True() => True()
+    case False() => psi match { 
+      case _: True => True()
+      case _: False => False()
+      case _ => psi }
+    case _ => psi match{ 
+      case _: True => True()
+      case _: False => phi
+      case _ => this }
     }
-  }
+  }  
 }
 object Or {
   def apply(phi: Formula, psi: Formula) = phi match {
@@ -218,7 +213,6 @@ object Or {
 class Until(val phi: Formula, val psi: Formula) extends BiOp(phi, psi)  {
   val operatorSymbol = "U"  
   val texSymbol = """\ltlU"""
-  def eraseDobuleNeg = Until(phi.eraseDobuleNeg, psi.eraseDobuleNeg)
 }
 object Until {
   def apply(phi: Formula, psi: Formula) = new Until(phi, psi)
@@ -236,7 +230,6 @@ case class True extends Formula {
   val numOfPreds = 0
   val numOfQuantified = 0
  
-  def eraseDobuleNeg = this
   def literalsQ = Set[Formula]()
 }
 
@@ -246,24 +239,20 @@ case class True extends Formula {
  * ###############
  */
 
-case class Eventually(chi: Formula) extends Until(True(), chi) { 
-  override val operatorSymbol = "F"
-  override val texSymbol = """\ltlF """  
-  override def toString(asTex: Boolean) = {if(asTex) texSymbol else operatorSymbol} + {if(chi.showParentheses) "(" + chi.toString(asTex) + ")" else chi.toString(asTex)}
-  override val length = chi.length + 1
-  override lazy val subFormulae = chi.subFormulae + this
-  override lazy val subFormulaeQ = chi.subFormulaeQ + this  
-  override def eraseDobuleNeg = Eventually(chi.eraseDobuleNeg)
+case class Eventually(phi: Formula) extends UnOp(phi) { // extends Until(True(), phi)
+  val operatorSymbol = "F"
+  val texSymbol = """\ltlF """
+  val level = phi.level 
+  lazy val subFormulae = phi.subFormulae + this
+  lazy val subFormulaeQ = phi.subFormulaeQ + this  
 }
 
-case class Globally(chi: Formula) extends Not(Until(True(), Not(chi))) {
-  override val operatorSymbol = "G"
-  override val texSymbol = """\ltlG """
-  override def toString(asTex: Boolean) = {if(asTex) texSymbol else operatorSymbol} + {if(chi.showParentheses) "(" + chi.toString(asTex) + ")" else chi.toString(asTex)}
-  override val length = chi.length + 1
-  override lazy val subFormulae = chi.subFormulae + this
-  override lazy val subFormulaeQ = chi.subFormulaeQ + this  
-  override def eraseDobuleNeg = Globally(chi.eraseDobuleNeg)
+case class Globally(phi: Formula) extends UnOp(phi) {  // extends Not(Until(True(), Not(phi)))
+  val operatorSymbol = "G"
+  val texSymbol = """\ltlG """
+  val level = phi.level 
+  lazy val subFormulae = phi.subFormulae + this
+  lazy val subFormulaeQ = phi.subFormulaeQ + this  
 }
 
 case class Implies(chi: Formula, xi: Formula) extends Or(Not(chi), xi) {
@@ -274,7 +263,6 @@ case class Implies(chi: Formula, xi: Formula) extends Or(Not(chi), xi) {
   override val length = chi.length + xi.length + 1
   override lazy val subFormulae = chi.subFormulae ++ xi.subFormulae + this
   override lazy val subFormulaeQ = chi.subFormulaeQ ++ xi.subFormulaeQ + this  
-  override def eraseDobuleNeg = Implies(chi.eraseDobuleNeg, xi.eraseDobuleNeg)
 }
 
 case class WeakUntil(chi: Formula, xi: Formula) extends Or(Until(chi,xi), Globally(chi)) {
@@ -285,7 +273,6 @@ case class WeakUntil(chi: Formula, xi: Formula) extends Or(Until(chi,xi), Global
   override val length = chi.length + xi.length + 1
   override lazy val subFormulae = chi.subFormulae ++ xi.subFormulae + this
   override lazy val subFormulaeQ = chi.subFormulaeQ ++ xi.subFormulaeQ + this  
-  override def eraseDobuleNeg = WeakUntil(chi.eraseDobuleNeg, xi.eraseDobuleNeg)
 }
 
 /*
@@ -301,7 +288,7 @@ case class Release(phi: Formula, psi: Formula) extends Formula  {
 }
 */
 
-case class Exists(p: Uop, chi: Formula) extends Not(Forall(p, Not(chi).eraseDobuleNeg)) {
+case class Exists(p: Uop, chi: Formula) extends Not(Forall(p, Not(chi))) {
   require(p.args.forall(_.isInstanceOf[Var]))
   override val operatorSymbol = "\u2203" + p.args.mkString(",") + ":" + p.name + "."
   override val texSymbol = """\exists """ + p.args.mkString(",") + ":" + p.name + """.\ """
@@ -309,19 +296,17 @@ case class Exists(p: Uop, chi: Formula) extends Not(Forall(p, Not(chi).eraseDobu
   override val length = chi.length + 1
   override lazy val subFormulae = chi.subFormulae + this
   lazy val subformulaeQ = Set[Formula](this)
-  override def eraseDobuleNeg = Exists(p, chi.eraseDobuleNeg)
 }
 
-case class False extends Formula { // Not(True())
-  override def toString(asTex: Boolean) = if(asTex) """\bot""" else "\u22A4"
+case class False extends Not(True()) {
+  override def toString(asTex: Boolean) = if(asTex) """\bot""" else "\u22A5"
   override val length = 1
   override val level = 0
   override lazy val subFormulae = Set[Formula](this)
   override lazy val subFormulaeQ = Set[Formula](this)
   override val numOfPreds = 0
-  override def eraseDobuleNeg = this
-  val isAtomQ = false
-  val isLiteralQ = false
+  override val isAtomQ = false
+  override val isLiteralQ = false
   override def literalsQ = Set[Formula]()  
 }
 
@@ -335,7 +320,6 @@ case class ForallConj(elems: Set[(Formula, Valuation)] = Set[(Formula, Valuation
   val subFormulae = elems.map(_._1.subFormulae).fold(Set())(_ union _)
   val subFormulaeQ = elems.map(_._1.subFormulaeQ).fold(Set())(_ union _)
   val numOfPreds = elems.map(_._1.numOfPreds).sum 
-  def eraseDobuleNeg = this 
   def literalsQ = elems.map(_._1.literalsQ).fold(Set())(_ union _)
   def eval = {
     val newElems = elems.filterNot(_._1.isInstanceOf[True])
