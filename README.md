@@ -1,7 +1,9 @@
-Ltlfo2mon for RV'13
-===================
+Ltlfo2mon
+=========
 
 Ltlfo2mon is an automata-based monitoring framework for a first-order temporal logic, called LTLFO. It generates and executes monitors for policies specified in LTLFO to verify if a provided trace of events violates or satisfies them. This work is part of the conference paper [From propositional to first-order monitoring](http://kuester.multics.org/publications/RV13.pdf) and will be presented at [RV'13](http://rv2013.gforge.inria.fr/).
+
+This is the current version of Ltlfo2mon. To see the version and the test-data that was used to generate the experiments for RV'13, please go to the branch [rv2013](https://github.com/jckuester/ltlfo2mon/tree/rv2013).
 
 Usage
 -----
@@ -82,19 +84,10 @@ $ sbt
 [info] Loading project definition from ./src/scala/ltlfo2mon/project
 [info] Set current project to ltlfo2mon (in build file:./src/scala/ltlfo2mon/)
 > assembly
-[info] Packaging /home/jkuster/phd/src/scala/ltlfo2mon/target/scala-2.10/ltlfo2mon.jar ...
+[info] Packaging ./target/scala-2.10/ltlfo2mon.jar ...
 [info] Done packaging.
 [success] Total time: 4 s, completed Jul 16, 2013 2:56:14 PM
 ```
-
-Experiments
-----------
-
-In the folder `experiments/` you find the scripts and data, which have been used to generate the experiments for `Fig. 2` in [From propositional to first-order monitoring](http://kuester.multics.org/publications/RV13.pdf):
-
-- The python script `generate-traces.py` generates you test traces (you can define its length, the maximal size of events, and parameters of a log-normal distribution for values of predicate `w`).
-- The bash-script `run-experiments.sh` runs the monitor for formulae in `formulae.dat` and traces in `traces_10000.dat`. You can find the results of the experiments for the conference in `results/`.
-- `experiments-tikz.r` is an R-script that calculates the statistics and plots the diagram.
 
 Installing
 ----------
