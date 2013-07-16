@@ -82,7 +82,7 @@ $ sbt
 [info] Loading project definition from ./src/scala/ltlfo2mon/project
 [info] Set current project to ltlfo2mon (in build file:./src/scala/ltlfo2mon/)
 > assembly
-[info] Packaging /home/jkuster/phd/src/scala/ltlfo2mon/target/scala-2.10/ltlfo2mon.jar ...
+[info] Packaging ./target/scala-2.10/ltlfo2mon.jar ...
 [info] Done packaging.
 [success] Total time: 4 s, completed Jul 16, 2013 2:56:14 PM
 ```
