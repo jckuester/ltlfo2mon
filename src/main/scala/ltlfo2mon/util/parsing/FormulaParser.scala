@@ -18,17 +18,16 @@
  ******************************************************************************/
 package ltlfo2mon.util.parsing
 
-import scala.util.parsing.combinator.syntactical._
-import scala.util.parsing.combinator.PackratParsers
-import scala.collection._
 import ltlfo2mon.datatype._
 
+import scala.collection._
+import scala.util.parsing.combinator.syntactical._
 /*
  * Order of precedence: not = X = G = F > W > U > and > or > implies > iff > forall = exists,
  *                      bind from right to left, e.g., p U (q U r)  
  */
 
-// TODO no free variables
+// TODO check for no free variables
 class FormulaParser(struct: Structure) extends StandardTokenParsers with OperatorPrecedenceParsers {
   var variables: mutable.Set[String] = null
   
@@ -37,31 +36,31 @@ class FormulaParser(struct: Structure) extends StandardTokenParsers with Operato
       
   lazy val variable = varNameParser ^^ { case v => Var(v.chars)}
   lazy val const = constNameParser ^^ { case c => Const(c.chars)} 
-  lazy val funct = functNameParser ~ "(" ~ terms <~ ")" ^^ { case f ~ _ ~ terms => Funct(f.chars, terms)}
-  lazy val terms: Parser[Vector[Term]] = rep1sep((variable | const | funct), ",") ^^ {case terms => terms.toVector }
+  lazy val funct = functNameParser ~ "(" ~ terms <~ ")" ^^ { case f ~ _ ~ vector => Funct(f.chars, vector)}
+  lazy val terms: Parser[Vector[Term]] = rep1sep(variable | const | funct, ",") ^^ {case list => list.toVector }
   val args = ("(" ~> terms <~ ")").? ^^ { terms => terms }
-  lazy val vars = newVarParser ^^ { case x => variables += x.chars; Vector(Var(x.chars)) } | "(" ~> rep1sep(newVarParser, ",") <~ ")" ^^ { case vars => variables ++= vars.map(_.chars).toSet; vars.map(x => Var(x.chars)).toVector
+  lazy val vars = newVarParser ^^ { case x => variables += x.chars; Vector(Var(x.chars)) } | "(" ~> rep1sep(newVarParser, ",") <~ ")" ^^ { case list => variables ++= list.map(_.chars).toSet; list.map(x => Var(x.chars)).toVector
                                                                                     }
   lazy val newVarParser: Parser[Elem] = elem("forallVar", v => struct.isFreeName(v.chars))
   
   lazy val uOp = uOpNameParser ~ args ^^ { case name ~ attrs => Uop(name.chars, attrs.get) }
   lazy val iOp = iOpNameParser ~ args ^^ { case name ~ attrs => Iop(name.chars, attrs.get, struct.iOps(name.chars)._2) } 
-  val top = "true" ^^ {case _ => True()}
-  val bottom = "false" ^^ {case _ => Not(True())} // False()
-  val forall = "A" ~> vars ~ ":" ~ uOpNameParser <~"." ^^ { case vars ~ _ ~ uOpName =>  Uop(uOpName.chars, vars)}
-  val exists = "E" ~> vars ~ ":" ~ uOpNameParser <~"." ^^ { case vars ~ _ ~ uOpName =>  Uop(uOpName.chars, vars)}
+  val top = "true" ^^ {case _ => True}
+  val bottom = "false" ^^ {case _ => False} // Not(True())
+  val forall = "A" ~> vars ~ ":" ~ uOpNameParser <~"." ^^ { case vector ~ _ ~ uOpName =>  Uop(uOpName.chars, vector)}
+  val exists = "E" ~> vars ~ ":" ~ uOpNameParser <~"." ^^ { case vector ~ _ ~ uOpName =>  Uop(uOpName.chars, vector)}
   
   def formula:Parser[Formula] = operators[Any,Formula](
       Prefix(100)("!"|"not") { (_, phi) => Not(phi) },
       Prefix(100)("X") { (_, phi) => Next(phi) },
       Prefix(100)("G"|"[]") { (_, phi) => Globally(phi) }, // Not(Until(True(), Not(phi)), true)
       Prefix(100)("F"|"<>") { (_, phi) => Eventually(phi) },  // Until(True(), phi, true)
-      Infix(200, 200-1)("W") { (_, phi, psi) => WeakUntil(phi,psi) },  // Or(Until(phi, psi),Globally(phi))
+      Infix(200, 200-1)("W") { (_, phi, psi) => Or(Until(phi, psi),Globally(phi)) },  // WeakUntil(phi,psi)
       Infix(300, 300-1)("U") { (_, phi, psi) => Until(phi, psi) },
       Infix(400-1, 400)("&"|"&&") { (_, phi, psi) => And(phi, psi) },
       Infix(500-1, 500)("|"|"||") { (_, phi, psi) => Or(phi, psi) },
-      Infix(600-1, 600)("->") { (_, phi, psi) => Implies(phi, psi) },
-      Infix(700-1, 700)("<->") { (_, phi, psi) => And(Implies(phi, psi), Implies(psi, phi)) }, // TODO
+      Infix(600-1, 600)("->") { (_, phi, psi) => Or(Not(phi), psi) }, // Implies(phi, psi)
+      //Infix(700-1, 700)("<->") { (_, phi, psi) => And(Implies(phi, psi), Implies(psi, phi)) },
       Prefix(800)(forall) { (uOpX,phi) => Forall(uOpX, phi) },
       Prefix(800)(exists) { (uOpX,phi) => Exists(uOpX, phi) } // Not(Forall(uOpX, phi))      
       ) ( "(" ~> formula <~ ")" | top | bottom | uOp | iOp )

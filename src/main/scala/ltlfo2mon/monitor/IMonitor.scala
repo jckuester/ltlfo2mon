@@ -16,16 +16,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with ltlfo2mon.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package ltlfo2mon.monitor
 
+package ltlfo2mon.monitor
 import ltlfo2mon.datatype._
 import ltlfo2mon.datatype.Types._
 import scala.collection._
 
-
 abstract class IMonitor(val phi: Formula) {
   def name: String
-  def process(event: Event, executedSubmons: mutable.HashMap[Int,Boolean3]): Boolean3
-  def process(trace: Trace, gnuplotFile: String): (Boolean3,Int)
+  //def process(event: Event): Boolean3
+  def process(trace: Trace, gnuplotFile: String): (Boolean3, Int)
   def size: Int
 }

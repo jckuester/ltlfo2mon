@@ -40,22 +40,22 @@ trait OperatorPrecedenceParsers extends Parsers {
     def fold(lhs:Double, ops:Ops, out:Out):(Ops,Out) =
       ops match {
         case (op, o)::ops if op.rhs < lhs =>
-          fold(lhs, ops, (( (op, out): @unchecked ) match {
-            case (op:Prefix[T,U], x::xs) => op.map(o, x) :: xs
-            case (op:Suffix[T,U], x::xs) => op.map(o, x) :: xs
-            case (op: Infix[T,U], y::x::xs) => op.map(o, x, y) :: xs
-          }))
+          fold(lhs, ops, ((op, out): @unchecked) match {
+            case (op: Prefix[T, U], x :: xs) => op.map(o, x) :: xs
+            case (op: Suffix[T, U], x :: xs) => op.map(o, x) :: xs
+            case (op: Infix[T, U], y :: x :: xs) => op.map(o, x, y) :: xs
+          })
         case _ => ops -> out
       }
  
     def findSuffix(ops:Ops, out:Out, in:Input):ParseResult[U] =
       suffixOps.iterator.map(e => e -> e.parse(in))
         .collectFirst {
-          case (op, Success(o, in)) =>
+          case (op, Success(o, input)) =>
             val $ = fold(op.lhs, ops, out)
             (if (op.isInstanceOf[Infix[_,_]])
               findPrefix _ else
-              findSuffix _ ) ((op, o) :: $._1, $._2, in)
+              findSuffix _ ) ((op, o) :: $._1, $._2, input)
         }
         .getOrElse(Success(fold(1/0.0, ops, out)._2.head, in))
  
