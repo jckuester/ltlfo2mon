@@ -29,7 +29,7 @@ import scala.io.Source
 
 object Ltlfo2mon {
 
-  val cmdParser = new scopt.immutable.OptionParser[Config]("ltlfo2mon", "v1.0 beta") {
+  val cmdParser = new scopt.immutable.OptionParser[Config]("ltlfo2mon", "v1.2 beta") {
     def options = Seq(
       arg("<ltlfo-formula>", "LTLFO formula.") { (v: String, c: Config) => c.copy(formula = v)}, // Syntax: p | q | \u03C6 & \u03C8 | \u03C6 || \u03C8 | X \u03C6 | \u03C6 U \u03C8 | G | F | -> | <-> | ")
       argOpt("<trace-on-stdin>", "Monitor reads a single trace from stdin.") { (v: String, c: Config) => c.copy()}, // Syntax: {<name>(<value>)} {} ..., e.g., {sms(123)} {}
