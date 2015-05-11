@@ -48,9 +48,9 @@ class FormulaParserTest extends AssertionsForJUnit {
           And(Iop("eq", Vector(Const("\"5\""), Const("\"4\"")), false),
             Iop("leq", Vector(Const("\"3\""), Const("\"4\"")), false))), formula)
 
-        assertEquals(3, Conf.struct.consts("\"3\""))
-        assertEquals(4, Conf.struct.consts("\"4\""))
-        assertEquals(5, Conf.struct.consts("\"5\""))
+        assertEquals("3", Conf.struct.consts("\"3\""))
+        assertEquals("4", Conf.struct.consts("\"4\""))
+        assertEquals("5", Conf.struct.consts("\"5\""))
       }
     }
   }

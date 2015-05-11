@@ -37,13 +37,7 @@ object Conf {
   /**
    * Constants and functions
    */
-  // constant names surrounded by " to look identical to dynamically added constants by parser
-  struct.addConst("\"0\"", 0)
-  struct.addConst("\"1\"", 1)
-  struct.addConst("\"2\"", 2)
-  struct.addConst("\"3\"", 3)
-  struct.addConst("\"4\"", 4)
-  struct.addConst("\"5\"", 5)
+  struct.addConst("pi", 3.14)
 
   struct.addFunct("add", (args: Vector[Any]) => args(0).toString.toInt + args(1).toString.toInt)
   struct.addFunct("mul", (args: Vector[Any]) => args(0).toString.toInt * args(1).toString.toInt)
@@ -75,7 +69,7 @@ object Conf {
   /*
    * print options
    */  
-  var verbose = true
+  var verbose = false
   var verbose2 = false
 
   val path = "/tmp/"
