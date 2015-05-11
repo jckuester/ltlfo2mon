@@ -383,7 +383,7 @@ case object False extends Formula {
   override def literalsQ = Set[Formula]()
 }
 
-// only for progression
+// used only by progression
 case class ForallConj(elems: Set[(Formula, Valuation)] = Set[(Formula, Valuation)]()) extends Formula {
   def toString(asTex: Boolean) = if (elems.isEmpty) ""
   else elems.toSeq.map { case (f, v) => f + {

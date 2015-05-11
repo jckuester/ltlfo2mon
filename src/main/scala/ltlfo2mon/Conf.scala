@@ -35,14 +35,20 @@ object Conf {
   struct.addUoperator("w") 
    
   /**
-   * Constants
+   * Constants and functions
    */
-  struct.addConst("1", 1)
-  struct.addConst("2", 2)
-  struct.addConst("3", 3)
-  struct.addConst("4", 4)
-  struct.addConst("5", 5)
-    
+  // constant names surrounded by " to look identical to dynamically added constants by parser
+  struct.addConst("\"0\"", 0)
+  struct.addConst("\"1\"", 1)
+  struct.addConst("\"2\"", 2)
+  struct.addConst("\"3\"", 3)
+  struct.addConst("\"4\"", 4)
+  struct.addConst("\"5\"", 5)
+
+  struct.addFunct("add", (args: Vector[Any]) => args(0).toString.toInt + args(1).toString.toInt)
+  struct.addFunct("mul", (args: Vector[Any]) => args(0).toString.toInt * args(1).toString.toInt)
+  struct.addFunct("sub", (args: Vector[Any]) => args(0).toString.toInt - args(1).toString.toInt)
+
   /**
    * I-operators
    */  
@@ -52,7 +58,8 @@ object Conf {
   struct.addIoperator("eq", (args: Vector[Any]) => args(0).toString.toInt == args(1).toString.toInt)
   struct.addIoperator("even", (args: Vector[Any]) => args(0).toString.toInt % 2 == 0)
   struct.addIoperator("odd", (args: Vector[Any]) => args(0).toString.toInt % 2 != 0)
-  struct.addIoperator("div4", (args:Vector[Any]) => args(0).toString.toInt % 4 == 0) 
+  struct.addIoperator("div4", (args:Vector[Any]) => args(0).toString.toInt % 4 == 0)
+  struct.addIoperator("regex", (args:Vector[Any]) => args(0).toString.matches(args(1).toString))
   
   // for RV'13 experiments
   struct.addIoperator("m", (args:Vector[Any]) => if((Conf.index+77) % (args(0).toString.toInt+80) == 0) true else false)
@@ -68,7 +75,7 @@ object Conf {
   /*
    * print options
    */  
-  var verbose = false
+  var verbose = true
   var verbose2 = false
 
   val path = "/tmp/"

@@ -393,7 +393,6 @@ object SAbasedMonitor {
   def setLookupTable(policy: Formula) = {
     lookupTable = mutable.HashMap[Formula, States]()
     policy.getPhiOfQuantifiedSFs.foreach { f => SAbasedMonitor.lookupTable.put(f, new LTL3ToolsParser(f).parse())}
-    println(policy.getPhiOfQuantifiedSFs)
   }
 
   def storeLookupTableToFile(file: String) = {

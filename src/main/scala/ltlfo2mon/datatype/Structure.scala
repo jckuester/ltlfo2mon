@@ -18,6 +18,8 @@
   * *****************************************************************************/
 package ltlfo2mon.datatype
 
+import ltlfo2mon.util.parsing.FormulaParser
+
 import scala.collection._
 
 /**
@@ -26,23 +28,53 @@ import scala.collection._
  */
 class Structure {
   var uOps: mutable.HashSet[String] = mutable.HashSet[String]()
-  var iOps: mutable.HashMap[String, (Vector[Any] => Boolean, Boolean)] = mutable.HashMap[String, (Vector[Any] => Boolean, Boolean)]()
+  var iOps: mutable.HashMap[String, (Vector[Any] => Boolean, Boolean)] =
+    mutable.HashMap[String, (Vector[Any] => Boolean, Boolean)]()
   var functs: mutable.HashMap[String, Vector[Any] => Any] = mutable.HashMap[String, Vector[Any] => Any]()
   var consts: mutable.HashMap[String, Any] = mutable.HashMap[String, Any]()
+  var vars: mutable.HashSet[String] = mutable.HashSet[String]()
 
-  def addUoperator(name: String) = if (isFreeName(name)) uOps.add(name)
+  def addUoperator(name: String, throwException: Boolean = true) =
+    if (isNameFree(name, throwException) && isIdentifier(name, throwException)) uOps.add(name) else false
 
-  def addIoperator(name: String, interpr: Vector[Any] => Boolean, isRigid: Boolean = false) = if (isFreeName(name)) iOps.put(name, (interpr, isRigid))
+  def addIoperator(name: String, interpr: Vector[Any] => Boolean, isRigid: Boolean = false) =
+    if (isNameFree(name) && isIdentifier(name)) iOps.put(name, (interpr, isRigid))
 
-  def addFunct(name: String, interpr: Vector[Any] => Any) = if (isFreeName(name)) functs.put(name, interpr)
+  def addFunct(name: String, interpr: Vector[Any] => Any) =
+    if (isNameFree(name) && isIdentifier(name)) functs.put(name, interpr)
 
-  def addConst(name: String, interpr: Any) = if (isFreeName(name)) consts.put(name, interpr)
+  def addConst(name: String, interpr: Any, throwException: Boolean = true) =
+    if (isNameFree(name, throwException)) { consts.put(name, interpr); true } else false
 
-  def isFreeName(name: String): Boolean = {
-    if (!uOps(name) && !iOps.keySet(name) && !functs.keySet(name) && !consts.keySet(name)) {
+  def addVar(name: String, throwException: Boolean = true) =
+    if (isNameFree(name, throwException) && isIdentifier(name, throwException)) vars.add(name) else false
+
+
+  /*
+   * check if names are Java identifiers or reserved keywords
+   */
+  def isIdentifier(name: String, throwException: Boolean = true): Boolean = {
+    if(name.matches("""[a-zA-Z_$][a-zA-Z\d_$]*""") && !new FormulaParser(this).lexical.reserved(name)) {
       true
     } else {
-      throw new Exception("uOps, iOps, functs and consts must be disjoint.")
+      if(throwException) {
+        throw new IllegalArgumentException("U-Op, I-Op, function, constant and variable names " +
+          "must be Java identifiers.")
+      } else {
+        false
+      }
+    }
+  }
+
+  def isNameFree(name: String, throwException: Boolean = true): Boolean = {
+    if(!(uOps(name) || iOps.keySet(name) || functs.keySet(name) || consts.keySet(name) || vars(name))) {
+      true
+    } else {
+      if(throwException) {
+        throw new IllegalArgumentException("U-Op, I-Op, function, constant and variable names must be disjoint.")
+      } else {
+        false
+      }
     }
   }
 }

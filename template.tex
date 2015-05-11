@@ -27,13 +27,14 @@ ${foreach sas sa}
   \\begin{center}
     \\begin{tabular}{l|l}
     State & Formulae \\\\
-    \\hline 
+    \\hline
     ${foreach sa.value.states state}
     ${state.key} & $${state.value}$ \\\\
     ${end}
-  \\end{tabular}  
+  \\end{tabular}
 \\end{center}
 \\end{table}
 ${end}
 
 \\end{document}
+

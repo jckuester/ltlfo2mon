@@ -30,8 +30,8 @@ class TraceParser(struct: Structure) extends StandardTokenParsers with PackratPa
 
   def predParser: Parser[Elem] = elem("predicate", p => struct.uOps(p.chars))
 
-  val action: Parser[Action] = predParser ~ "(" ~ rep1sep(numericLit, ",") <~ ")" ^^ { case name ~ _ ~ args => (name.chars, args.toVector)}
-  // TODO domain-value
+  val action: Parser[Action] = predParser ~ "(" ~ rep1sep(domainValue, ",") <~ ")" ^^ { case name ~ _ ~ args => (name.chars, args.toVector)}
+  val domainValue = numericLit | stringLit
   val event: Parser[Event] = "{" ~> repsep(action, ",") <~ "}" ^^ { case actions => actions.toSet}
   val trace: Parser[Trace] = rep1sep(event, ",") ^^ { case events => Trace(events)}
 

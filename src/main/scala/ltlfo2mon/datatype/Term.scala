@@ -39,7 +39,7 @@ case class Var(name: String) extends Term {
 case class Funct(name: String, args: Vector[Term]) extends Term {
   def interpret(struct: Structure, v: Valuation) = struct.functs.get(name) match {
     case None => None
-    case Some(funct) => Some(funct(args.map(_.interpret(struct, v)))) // TODO what if _.interpret returns None? 
+    case Some(funct) => Some(funct(args.map(_.interpret(struct, v).get))) // TODO what if _.interpret returns None?
   }
 }
 
