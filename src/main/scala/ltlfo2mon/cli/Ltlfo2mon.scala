@@ -29,13 +29,13 @@ import scala.io.Source
 
 object Ltlfo2mon {
 
-  val cmdParser = new scopt.immutable.OptionParser[Config]("ltlfo2mon", "v0.3") {
+  val cmdParser = new scopt.immutable.OptionParser[Config]("ltlfo2mon", "v1.3") {
     def options = Seq(
       arg("<LTLFO formula>", "LTLFO formula that gets monitored.") { (v: String, c: Config) => c.copy(formula = v)}, // Syntax: p | q | \u03C6 & \u03C8 | \u03C6 || \u03C8 | X \u03C6 | \u03C6 U \u03C8 | G | F | -> | <-> | ")
       argOpt("<trace>", "Monitor reads single trace from stdin.") { (v: String, c: Config) => c.copy()}, // Syntax: {<name>(<value>)} {} ..., e.g., {sms(123)} {}
       //opt("l", "look-up-table", "<file>", "Provide file with pre-computed SAs.") { (v: String, c: Config) => c.copy(saCacheFile = v) },
       opt("o", "output", "<file>", "Write monitor statistics (size, number of submonitors, etc.) to file.") { (v: String, c: Config) => c.copy(outputFile = v)},
-      flag("p", "progression", "Use progression/formula-rewriting as monitor.") { (c: Config) => c.copy(progression = true)},
+      flag("p", "progression", "Use progression/formula rewriting as monitor.") { (c: Config) => c.copy(progression = true)},
       flag("sa", "sa-monitor", "Use deprecated SA-based monitor (default is optimized SA-based monitor, based on ltl3tools).") { (c: Config) => c.copy(sa = true)},
       flag("v", "verbose", "Show monitor's statistics (size, number of submonitors, etc.) after each step.") { (c: Config) => c.copy(verbose = true)},
       flag("vv", "verbose level 2", "Show monitor's inner-state after each step.") { (c: Config) => c.copy(verbose = true, verbose2 = true)}
