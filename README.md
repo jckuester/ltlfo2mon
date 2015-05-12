@@ -4,8 +4,8 @@ Ltlfo2mon
 Ltlfo2mon is an (automata-based) monitoring framework for a
 first-order temporal logic, called LTLFO. It lets you reason about
 arbitrary traces (i.e., sequences of events), where events are sets of
-actions that can carry data; for example `{login('user1'),
-logout('user2')},{logout('user2')}`.
+actions that can carry data; for example
+`{login('user1'),logout('user2')},{logout('user2')}`.
 
 The framework takes formulae specified in LTLFO as input (see
 [Syntax](#ltlfo-formula-syntax)) and generates monitors for them. The
@@ -41,8 +41,8 @@ Usage: ltlfo2mon [options] <LTLFO formula> <trace>
   -p | --progression
         Use progression/formula rewriting as monitor.
   -sa | --sa-monitor
-        Use deprecated SA-based monitor (default is optimized SA-based monitor, based on 
-        ltl3tools).
+        Use deprecated SA-based monitor (default is optimized SA-based monitor, 
+        based on ltl3tools).
   -v | --verbose
         Show monitor's statistics (size, number of submonitors, etc.) after each step.
   -vv | --verbose level 2
@@ -53,11 +53,10 @@ Usage: ltlfo2mon [options] <LTLFO formula> <trace>
         Monitor reads single trace from stdin.
 ```
 
-By default is used the optimised automata-based algorithm from the
-FMSD article, but the arguments `--sa-monitor` or `--progression` let
-you switch to the algorithm from RV'13 or progression/formula
-rewriting. Note that you need to install
-[Ltl3tools](http://ltl3tools.sourceforge.net/) or
+By default is used the optimised automata-based algorithm, but the
+arguments `--sa-monitor` or `--progression` let you switch to the
+algorithm from RV'13 or progression/formula rewriting. Note that you
+need to install [Ltl3tools](http://ltl3tools.sourceforge.net/) or
 [lbt](http://www.tcs.hut.fi/Software/maria/tools/lbt/) to use the FMSD
 or RV'13 algorithm respectively (see [Install](#installing)).
 
@@ -67,11 +66,11 @@ LTLFO formula syntax
 
 ```
 <formula> := ( <formula> ) | ~ <formula> | <formula> /\ <formula> | 
-             <formula> \/ &phi; | &phi; -> &phi; | &phi; <-> &phi; | 
-             G <formula> | F <formula> | X <formula> | 
-	     <formula> U <formula> | <formula> W <formula> | 
-	     A (t_1, ...,t_n):p. <formula> | E (x, ..., y):p. <formula> | 
-	     true | false | p(t_1, ..., t_n) | r(t_1, ...., t_n)
+             <formula> \/ <formula> | <formula> -> <formula> | 
+             <formula> <-> <formula> | G <formula> | F <formula> | X <formula> | 
+             <formula> U <formula> | <formula> W <formula> | 
+             A (t_1, ...,t_n):p. <formula> | E (x, ..., y):p. <formula> | 
+             true | false | p(t_1, ..., t_n) | r(t_1, ...., t_n)
 ```
 
 `t_1, ..., t_n` are terms, i.e., variables, functions `f(t_1, ...,
@@ -80,21 +79,20 @@ with some predefined functions (e.g., `sum(x,y), sub(x,y), mul(x,y)`
 and constants (e.g., `pi`). To read how to define your own, please
 read [Configure](#configure).
 
-The difference between interpreted predicates `p` (called I-Operator)
- and uninterpreted predicates `r` (called U-Operator) is that the
+The difference between interpreted predicates `p` (called I-Operators)
+ and uninterpreted predicates `r` (called U-Operators) is that the
  former become true by their appearance in the trace, whereas the
  latter are evaluated by a program or algorithm (and cannot appear in
  the trace).  Therefore, I-Operators, like functions, require the
  definition of an evaluation algorithm (see
- [Configure](#configure)). The difference to functions is that the
- algorithm for I-Operators has to return `Boolean`. Ltlfo2mon comes
- with predefined I-Operators, such as ` eq(x,y), leq(x,y), even(x),
- odd(x)`.
+ [Configure](#configure)). They differ in that the algorithm for
+ I-Operators has to return `Boolean`. Ltlfo2mon comes with predefined
+ I-Operators, such as ` eq(x,y), leq(x,y), even(x), odd(x)`.
 
  **Note:** U-Operators (like `v, w, login` in the following examples)
  don't have to be predefined (as they don't require an evaluation
  algorithm). The only requirement is that their names are not yet
- reserved by I-ops, functions, or variable names.
+ reserved by I-Operators, functions, or variable names.
 
  **Also note:** The parser recognises string and integers automatically
  as constants, and defines them accordingly.
@@ -179,22 +177,22 @@ The jar is written to `/target/scala-2.10/`.
 Installing
 ----------
 
-For the optimised algorithm (default) you need to install
+For the optimised algorithm (default) install the
 [Ltl3tools](http://ltl3tools.sourceforge.net/). Then edit the
 installation directory in `ltl3tools.sh` and add the script to your
 `PATH`.
 
-For the RV'13 algorithm (argument `--sa-monitor`) you first need to
-install [lbt](http://www.tcs.hut.fi/Software/maria/tools/lbt/), which
-converts a linear temporal logic formula to a generalised BÅ¸chi
-automaton. For Debian/Ubuntu you can install it via apt:
+For the RV'13 algorithm (argument `--sa-monitor`) install
+[lbt](http://www.tcs.hut.fi/Software/maria/tools/lbt/), which converts
+a linear temporal logic formula to a generalised BÅ¸chi automaton. For
+Debian/Ubuntu you can install it via apt:
 
 ```
 apt-get install lbt
 ```
 
-**Note:** You don't need to install any third-party tool if you run
-Ltlfo2mon with progression/formula rewriting (argument `-p`).
+**Note:** No third-party tool are needed to run Ltlfo2mon with
+progression/formula rewriting (argument `-p`).
 
 License
 -------
