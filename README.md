@@ -65,12 +65,10 @@ LTLFO formula syntax
 -------
 
 ```
-φ := ( φ ) | ~ φ | φ /\ φ | 
-             <formula> \/ <formula> | <formula> -> <formula> | 
-             <formula> <-> <formula> | G <formula> | F <formula> | X <formula> | 
-             <formula> U <formula> | <formula> W <formula> | 
-             A (x_1, ...,x_n):p. <formula> | E (x_1, ..., x_n):p. <formula> | 
-             true | false | p(t_1, ..., t_n) | r(t_1, ...., t_n)
+φ := ( φ ) | ~ φ | φ /\ φ | φ \/ φ | φ -> φ | φ <-> φ | 
+     G φ | F φ | X φ | φ U φ | φ W φ | 
+     A (x_1, ...,x_n): p. φ | E (x_1, ..., x_n): p. φ | 
+     p(t_1, ..., t_n) | r(t_1, ...., t_n) | true | false
 ```
 
 `t_1, ..., t_n` are terms, i.e., variables, functions `f(t_1, ...,
