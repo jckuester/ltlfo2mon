@@ -65,7 +65,7 @@ LTLFO formula syntax
 -------
 
 ```
-<formula> := ( <formula> ) | ~ <formula> | <formula> /\ <formula> | 
+φ := ( φ ) | ~ φ | φ /\ φ | 
              <formula> \/ <formula> | <formula> -> <formula> | 
              <formula> <-> <formula> | G <formula> | F <formula> | X <formula> | 
              <formula> U <formula> | <formula> W <formula> | 
@@ -197,8 +197,7 @@ Debian/Ubuntu you can install it via apt:
 apt-get install lbt
 ```
 
-**Note:** No third-party tool are needed to run Ltlfo2mon with
-progression/formula rewriting (argument `-p`).
+**Note:** No third-party tools required to run progression/formula rewriting (argument `-p`).
 
 License
 -------
