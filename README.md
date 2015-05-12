@@ -8,9 +8,9 @@ actions that can carry data; for example `{login('user1'),
 logout('user2')},{logout('user2')}`.
 
 The framework takes formulae specified in LTLFO as input (see
-[Syntax](#syntax)) and generates monitors for them. The monitors then
-verify whether a provided trace violates or satisfies the
-specification. The optimised monitoring algorithm (based on
+[Syntax](#ltlfo-formula-syntax)) and generates monitors for them. The
+monitors then verify whether a provided trace violates or satisfies
+the specification. The optimised monitoring algorithm (based on
 [Ltl3tools](http://ltl3tools.sourceforge.net/)) is part of the FMSD
 Journal article [The ins and outs of first-order runtime
 verification](http://dx.doi.org/doi:10.1007/s10703-015-0227-2),
@@ -41,7 +41,8 @@ Usage: ltlfo2mon [options] <LTLFO formula> <trace>
   -p | --progression
         Use progression/formula rewriting as monitor.
   -sa | --sa-monitor
-        Use deprecated SA-based monitor (default is optimized SA-based monitor, based on ltl3tools).
+        Use deprecated SA-based monitor (default is optimized SA-based monitor, based on 
+        ltl3tools).
   -v | --verbose
         Show monitor's statistics (size, number of submonitors, etc.) after each step.
   -vv | --verbose level 2
@@ -53,21 +54,24 @@ Usage: ltlfo2mon [options] <LTLFO formula> <trace>
 ```
 
 By default is used the optimised automata-based algorithm from the
-FMSD article, but the parameters `--sa-monitor` or `--progression` let
+FMSD article, but the arguments `--sa-monitor` or `--progression` let
 you switch to the algorithm from RV'13 or progression/formula
 rewriting. Note that you need to install
-[Ltl3tools](http://ltl3tools.sourceforge.net/)) or
+[Ltl3tools](http://ltl3tools.sourceforge.net/) or
 [lbt](http://www.tcs.hut.fi/Software/maria/tools/lbt/) to use the FMSD
-or RV'13 algorithm respectively (see [Install](#install).
+or RV'13 algorithm respectively (see [Install](#installing)).
 
 
 LTLFO formula syntax
 -------
 
 ```
-&phi; := ( &phi; ) | ~ &phi; | &phi; /\ &phi; | &phi; \/ &phi; | &phi; -> &phi; | &phi; <-> &phi; | G
-&phi; | F &phi; | X &phi; | &phi; U &phi; | &phi; W &phi; | A (t1, ...,
-tn):p. &phi; | E (x, ..., y):p. &phi; | true | false | p(t_1, ..., t_n) | r(t_1, ...., t_n)
+<formula> := ( <formula> ) | ~ <formula> | <formula> /\ <formula> | 
+             <formula> \/ &phi; | &phi; -> &phi; | &phi; <-> &phi; | 
+             G <formula> | F <formula> | X <formula> | 
+	     <formula> U <formula> | <formula> W <formula> | 
+	     A (t_1, ...,t_n):p. <formula> | E (x, ..., y):p. <formula> | 
+	     true | false | p(t_1, ..., t_n) | r(t_1, ...., t_n)
 ```
 
 `t_1, ..., t_n` are terms, i.e., variables, functions `f(t_1, ...,
@@ -78,9 +82,9 @@ read [Configure](#configure).
 
 The difference between interpreted predicates `p` (called I-Operator)
  and uninterpreted predicates `r` (called U-Operator) is that the
- former become true by its appearance in the trace, whereas the latter
- are evaluated by a program or algorithm (and cannot appear in the
- trace).  Therefore, I-Operators, like functions, require the
+ former become true by their appearance in the trace, whereas the
+ latter are evaluated by a program or algorithm (and cannot appear in
+ the trace).  Therefore, I-Operators, like functions, require the
  definition of an evaluation algorithm (see
  [Configure](#configure)). The difference to functions is that the
  algorithm for I-Operators has to return `Boolean`. Ltlfo2mon comes
@@ -89,8 +93,8 @@ The difference between interpreted predicates `p` (called I-Operator)
 
  **Note:** U-Operators (like `v, w, login` in the following examples)
  don't have to be predefined (as they don't require an evaluation
- algorithm). The only requirement is that their names are not already
- reserved by I-ops, functions, variable names.
+ algorithm). The only requirement is that their names are not yet
+ reserved by I-ops, functions, or variable names.
 
  **Also note:** The parser recognises string and integers automatically
  as constants, and defines them accordingly.
