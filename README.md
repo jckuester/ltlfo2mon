@@ -36,21 +36,21 @@ ltlfo2mon.jar` will show you the following options:
 ltlfo2mon v1.3
 Usage: ltlfo2mon [options] <LTLFO formula> <trace>
 
-  -o <file> | --output <file>
-        Write monitor statistics (size, number of submonitors, etc.) to file.
-  -p | --progression
-        Use progression/formula rewriting as monitor.
-  -sa | --sa-monitor
-        Use deprecated SA-based monitor (default is optimized SA-based monitor, 
-        based on ltl3tools).
-  -v | --verbose
-        Show monitor's statistics (size, number of submonitors, etc.) after each step.
-  -vv | --verbose level 2
-        Show monitor's inner-state after each step.
-  <LTLFO formula>
-        LTLFO formula that gets monitored.
-  <trace>
-        Monitor reads single trace from stdin.
+ -o <file> | --output <file>
+       Write monitor statistics (size, number of submonitors, etc.) to file.
+ -p | --progression
+       Use progression/formula rewriting as monitor.
+ -sa | --sa-monitor
+       Use deprecated SA-based monitor (default is optimized SA-based monitor, 
+       based on ltl3tools).
+ -v | --verbose
+       Show monitor's statistics (size, number of submonitors, etc.) after each step.
+ -vv | --verbose level 2
+       Show monitor's inner-state after each step.
+ <LTLFO formula>
+       LTLFO formula that gets monitored.
+ <trace>
+       Monitor reads single trace from stdin.
 ```
 
 By default is used the optimised automata-based algorithm, but the
@@ -69,7 +69,7 @@ LTLFO formula syntax
              <formula> \/ <formula> | <formula> -> <formula> | 
              <formula> <-> <formula> | G <formula> | F <formula> | X <formula> | 
              <formula> U <formula> | <formula> W <formula> | 
-             A (t_1, ...,t_n):p. <formula> | E (x, ..., y):p. <formula> | 
+             A (x_1, ...,x_n):p. <formula> | E (x_1, ..., x_n):p. <formula> | 
              true | false | p(t_1, ..., t_n) | r(t_1, ...., t_n)
 ```
 
@@ -87,7 +87,7 @@ The difference between interpreted predicates `p` (called I-Operators)
  definition of an evaluation algorithm (see
  [Configure](#configure)). They differ in that the algorithm for
  I-Operators has to return `Boolean`. Ltlfo2mon comes with predefined
- I-Operators, such as ` eq(x,y), leq(x,y), even(x), odd(x)`.
+ I-Operators, such as ` eq(x,y), leq(x,y), even(x), odd(x), regex(str, pattern)`.
 
  **Note:** U-Operators (like `v, w, login` in the following examples)
  don't have to be predefined (as they don't require an evaluation
@@ -122,7 +122,7 @@ echo "{w(2),v(4)},{w(12),v(7)},{}" | java -jar ltlfo2mon.jar "G A x:w. E y:v.leq
 This will return the result:
 
 ```
-Result: ë°Õ after 2 events.
+Result: ‚ä• after 2 events.
 ```
 
 The parser recognises `'user\d*'` as a string constant automatically:
@@ -131,12 +131,18 @@ The parser recognises `'user\d*'` as a string constant automatically:
 echo "{login('user1')},{login('user5')},{}" | java -jar ltlfo2mon.jar "G A x:login. regex(x,'user\d*')"
 ```
 
+This will return the result:
+
+```
+Result: ? after 3 events.
+```
+
 Configure
 ---------
 
 Custom predicates, functions or constants can be defined in
-`src/main/scala/ltlfo2mon/Conf.scala`. For example, the following line
-adds the definition of the interpreted predicate `even(x)`:
+`Conf.scala`. For example, the following statement adds the definition
+of the interpreted predicate `even(x)`:
 
 ```
 struct.addIoperator("even", (args: Vector[Any]) => args(0).toString.toInt % 2 == 0)
@@ -184,7 +190,7 @@ installation directory in `ltl3tools.sh` and add the script to your
 
 For the RV'13 algorithm (argument `--sa-monitor`) install
 [lbt](http://www.tcs.hut.fi/Software/maria/tools/lbt/), which converts
-a linear temporal logic formula to a generalised BÅ¸chi automaton. For
+a linear temporal logic formula to a generalised B√ºchi automaton. For
 Debian/Ubuntu you can install it via apt:
 
 ```
