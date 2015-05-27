@@ -5,7 +5,7 @@ Ltlfo2mon is an (automata-based) monitoring framework for a
 first-order temporal logic, called LTLFO. It lets you reason about
 arbitrary traces (i.e., sequences of events), where events are sets of
 actions that can carry data; for example
-`{login('user1'),logout('user2')},{logout('user2')}`.
+`{login('user1'),login('user2')},{logout('user2')}`.
 
 The framework takes formulae specified in LTLFO as input (see
 [Syntax](#ltlfo-formula-syntax)) and generates monitors for them. The
